@@ -1,0 +1,122 @@
+global:
+  server:
+    endpoint: 'http://10.77.78.11:8080'          # Default: http://127.0.0.1:8080
+    #    api_path: '/api/v1/otlp/v1/metrics'   # Default: "
+    insecure: true                         # yes(y), true / no(n), false
+  client:
+    auth: 'appez'
+    insecure: true
+    interval: 1m
+    labels:
+      env: 'production'
+      host_group: 'TEST'
+
+server:
+  metrics:
+    endpoint: 'http://10.77.78.11:9090'
+    api_path: '/api/v1/otlp/v1/metrics'
+    #    mode: 'grpc'
+    insecure: true
+    enabled: true
+  logs:
+    endpoint: 'http://10.77.78.11:3100'
+    api_path: '/otlp/v1/logs'
+    enabled: true
+  #    mode: 'grpc'
+  traces:
+    endpoint: ''
+    enabled: false
+
+# clients Section
+#########################
+## clients에 모니터링 대상 장비들을 정의합니다.
+## endpoint = 스토리지 서버의 엔드포인트(Spectrum API)
+## auth = 사용할 인증 정보(auths.name)
+## Insecure = TLS 설정
+clients:
+  - endpoint: 'https://10.77.77.222'
+    auth: "appez"
+    insecure: true
+    labels:
+      env: "production"
+      host_group: "Dell"
+  - endpoint: 'https://10.77.77.221'
+    auth: "appez"
+    insecure: true
+    labels:
+      env: "production"
+      host_group: "Dell"
+
+auths:
+  - name: "appez"
+    username: "appez"
+    password: "Passw0rd1!"
+
+# Collector's Sections
+# default :
+collectors:
+  basicSystemInfo:
+    enabled: true
+  systemCapacity:
+    enabled: true
+  metric:
+    enabled: true
+    paths:
+      # Cpu
+      - "sp.*.physical.coreCount"
+      - "sp.*.cpu.summary.busyTicks"
+      - "sp.*.cpu.summary.idleTicks"
+      - "sp.*.cpu.summary.waitTicks"
+
+      # Memory
+      - "sp.*.memory.summary.totalBytes"
+      - "sp.*.memory.summary.totalUsedBytes"
+      - "sp.*.memory.summary.cachedBytes"
+      - "sp.*.memory.summary.freeBytes"
+      - "sp.*.memory.summary.buffersBytes"
+
+      # Cache Memory
+      - "sp.*.memory.bufferCache.lookups"
+      - "sp.*.memory.bufferCache.hits"
+      - "sp.*.blockCache.global.summary.cleanPages"
+      - "sp.*.blockCache.global.summary.dirtyBytes"
+      - "sp.*.blockCache.global.summary.dirtyPages"
+      - "sp.*.blockCache.global.summary.flushedBlocks"
+      - "sp.*.blockCache.global.summary.flushes"
+
+      # Physical Disk
+      - "sp.*.physical.disk.*.readBlocks"
+      - "sp.*.physical.disk.*.writeBlocks"
+      - "sp.*.physical.disk.*.reads"
+      - "sp.*.physical.disk.*.writes"
+
+      # FibreChannel
+      - "sp.*.fibreChannel.fePort.*.readBlocks"
+      - "sp.*.fibreChannel.fePort.*.writeBlocks"
+      - "sp.*.fibreChannel.fePort.*.reads"
+      - "sp.*.fibreChannel.fePort.*.writes"
+
+      # Iscsi
+      - "sp.*.iscsi.fePort.*.readBlocks"
+      - "sp.*.iscsi.fePort.*.writeBlocks"
+      - "sp.*.iscsi.fePort.*.reads"
+      - "sp.*.iscsi.fePort.*.writes"
+
+      # Ethernet Port
+      - "sp.*.net.device.*.bytesIn"
+      - "sp.*.net.device.*.bytesOut"
+      - "sp.*.net.device.*.pktsIn"
+      - "sp.*.net.device.*.pktsOut"
+
+  lun:
+    enabled: true
+  event:
+    enabled: true
+  disk:
+    enabled: true
+  fcPort:
+    enabled: true
+  ethernetPort:
+    enabled: true
+  host:
+    enabled: true
