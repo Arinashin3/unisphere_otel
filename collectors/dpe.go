@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"unisphere_otel/gounity/api"
 
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 )
 
@@ -32,7 +33,6 @@ func NewDPE() *ModuleDPE {
 func (_m *ModuleDPE) Init(key string) {
 	_m.Enabled = true
 	_m.name = key
-
 	_m.descs = []*MetricDescriptor{
 		{
 			Key:      "health.value",
@@ -96,10 +96,16 @@ func (_m *ModuleDPE) Run(logger *slog.Logger, col *Collector) {
 			return nil
 		}
 
-		// Observer
+		// Loop Entries's Content
 		for _, v := range data {
+			// Set DPE's Attributes...
+			dpeAttrs := metric.WithAttributes(
+				attribute.String("dpe.id", v.Get("id").String()),
+			)
+
+			// Observe Metrics...
 			for observableKey, observable := range observableMap {
-				observer.ObserveFloat64(observable, v.Get(observableKey).Float(), clientAttrs)
+				observer.ObserveFloat64(observable, v.Get(observableKey).Float(), clientAttrs, dpeAttrs)
 			}
 		}
 
